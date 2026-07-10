@@ -1,6 +1,70 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useStore } from '../store/useStore';
-import { Download, Upload, RotateCcw, AlertTriangle, CheckCircle, Bell } from 'lucide-react';
+import { Download, Upload, RotateCcw, AlertTriangle, CheckCircle, Bell, ChevronDown, Check } from 'lucide-react';
+
+interface CustomSelectProps {
+  value: number;
+  options: { value: number; label: string }[];
+  onChange: (value: number) => void;
+}
+
+const CustomSelect: React.FC<CustomSelectProps> = ({ value, options, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div className="relative w-full" ref={containerRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between w-full h-11 px-3 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 text-sm font-medium text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-1 focus:ring-brand-green transition-colors cursor-pointer text-left"
+      >
+        <span>{selectedOption?.label}</span>
+        <ChevronDown className={`w-4 h-4 text-zinc-400 dark:text-zinc-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      {isOpen && (
+        <div className="absolute left-0 right-0 z-50 mt-1.5 w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl overflow-hidden animate-fade-in">
+          <div className="py-1 max-h-60 overflow-y-auto no-scrollbar">
+            {options.map((option) => {
+              const isSelected = option.value === value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => {
+                    onChange(option.value);
+                    setIsOpen(false);
+                  }}
+                  className={`flex items-center justify-between w-full h-11 px-3.5 text-sm transition-colors text-left cursor-pointer ${
+                    isSelected
+                      ? 'bg-brand-green/10 text-brand-green font-semibold dark:bg-brand-green/20'
+                      : 'text-zinc-700 hover:bg-zinc-50 dark:text-zinc-300 dark:hover:bg-zinc-950'
+                  }`}
+                >
+                  <span>{option.label}</span>
+                  {isSelected && <Check className="w-4 h-4 text-brand-green" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const Settings: React.FC = () => {
   const settings = useStore((state) => state.settings);
@@ -98,16 +162,16 @@ export const Settings: React.FC = () => {
             <label className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
               Daily Goal
             </label>
-            <select
+            <CustomSelect
               value={settings.dailyGoalMinutes}
-              onChange={(e) => updateSettings({ dailyGoalMinutes: parseInt(e.target.value) })}
-              className="w-full h-11 px-3 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-brand-green dark:text-zinc-100"
-            >
-              <option value={20 * 60}>20 hours</option>
-              <option value={21 * 60}>21 hours</option>
-              <option value={22 * 60}>22 hours (Recommended)</option>
-              <option value={23 * 60}>23 hours</option>
-            </select>
+              onChange={(val) => updateSettings({ dailyGoalMinutes: val })}
+              options={[
+                { value: 20 * 60, label: '20 hours' },
+                { value: 21 * 60, label: '21 hours' },
+                { value: 22 * 60, label: '22 hours (Recommended)' },
+                { value: 23 * 60, label: '23 hours' },
+              ]}
+            />
           </div>
 
           {/* Reminders Selector */}
@@ -115,16 +179,16 @@ export const Settings: React.FC = () => {
             <label className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
               Out-of-mouth Reminder Limit
             </label>
-            <select
+            <CustomSelect
               value={settings.reminderMinutes}
-              onChange={(e) => updateSettings({ reminderMinutes: parseInt(e.target.value) })}
-              className="w-full h-11 px-3 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-brand-green dark:text-zinc-100"
-            >
-              <option value={15}>15 minutes</option>
-              <option value={30}>30 minutes</option>
-              <option value={45}>45 minutes</option>
-              <option value={60}>60 minutes</option>
-            </select>
+              onChange={(val) => updateSettings({ reminderMinutes: val })}
+              options={[
+                { value: 15, label: '15 minutes' },
+                { value: 30, label: '30 minutes' },
+                { value: 45, label: '45 minutes' },
+                { value: 60, label: '60 minutes' },
+              ]}
+            />
           </div>
 
           {/* Clock format */}
