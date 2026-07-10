@@ -9,6 +9,7 @@ interface StoreState extends AppState {
   undo: () => void;
   clearUndo: () => void;
   nextTray: () => void;
+  updateTray: (id: string, updates: Partial<Tray>) => void;
   updateSettings: (settings: Partial<Settings>) => void;
   importData: (importedState: Omit<AppState, 'undoStack'>) => boolean;
   resetData: () => void;
@@ -139,6 +140,30 @@ export const useStore = create<StoreState>()(
 
         set({
           trays: [...state.trays, nextTrayObj],
+          undoStack: undoState,
+        });
+      },
+
+      updateTray: (id, updates) => {
+        const state = get();
+
+        // Save current state for undo
+        const undoState = {
+          currentState: state.currentState,
+          lastTransition: state.lastTransition,
+          sessions: [...state.sessions],
+          trays: [...state.trays],
+        };
+
+        const updatedTrays = state.trays.map((t) => {
+          if (t.id === id) {
+            return { ...t, ...updates };
+          }
+          return t;
+        });
+
+        set({
+          trays: updatedTrays,
           undoStack: undoState,
         });
       },
