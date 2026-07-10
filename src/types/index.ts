@@ -24,5 +24,6 @@ export interface AppState {
   sessions: Session[];
   trays: Tray[];
   settings: Settings;
-  undoStack: Omit<AppState, 'undoStack' | 'settings'> | null; // For 10s undo capability
+  onboardingCompleted: boolean;
+  undoStack: Omit<AppState, 'undoStack' | 'settings' | 'onboardingCompleted'> | null; // For 10s undo capability
 }

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { startOfDay } from 'date-fns';
 import type { AppState, Session, Tray, Settings } from '../types';
 
 interface StoreState extends AppState {
@@ -12,6 +13,12 @@ interface StoreState extends AppState {
   updateTray: (id: string, updates: Partial<Tray>) => void;
   updateSettings: (settings: Partial<Settings>) => void;
   importData: (importedState: Omit<AppState, 'undoStack'>) => boolean;
+  completeOnboarding: (params: {
+    currentTrayNum: number;
+    startedAtMs: number;
+    isWearingNow: boolean;
+    lastActionMinutesAgo: number;
+  }) => void;
   resetData: () => void;
 }
 
@@ -37,6 +44,7 @@ export const useStore = create<StoreState>()(
       sessions: [],
       trays: [getInitialTray()],
       settings: DEFAULT_SETTINGS,
+      onboardingCompleted: false,
       undoStack: null,
 
       putIn: () => {
@@ -200,6 +208,86 @@ export const useStore = create<StoreState>()(
         }
       },
 
+      completeOnboarding: (params) => {
+        const { currentTrayNum, startedAtMs, isWearingNow, lastActionMinutesAgo } = params;
+        const now = Date.now();
+
+        const generatedTrays: Tray[] = [];
+        const generatedSessions: Session[] = [];
+
+        // 1. Generate previous trays (each 7 days duration before the startedAtMs)
+        const trayDurationMs = 7 * 24 * 60 * 60 * 1000;
+        for (let i = 1; i < currentTrayNum; i++) {
+          const started = startedAtMs - (currentTrayNum - i) * trayDurationMs;
+          const ended = started + trayDurationMs;
+          generatedTrays.push({
+            id: `tray-${i}-${Math.random().toString(36).substring(2, 5)}`,
+            number: i,
+            startedAt: started,
+            expectedEnd: ended,
+          });
+        }
+
+        // 2. Generate active current tray
+        generatedTrays.push({
+          id: `tray-${currentTrayNum}-${Math.random().toString(36).substring(2, 5)}`,
+          number: currentTrayNum,
+          startedAt: startedAtMs,
+          expectedEnd: startedAtMs + trayDurationMs,
+        });
+
+        // 3. Generate mock sessions for historical days (prior to today)
+        const firstTrayStartMs = generatedTrays[0].startedAt;
+        const startOfTodayMs = startOfDay(new Date()).getTime();
+
+        const dayMs = 24 * 60 * 60 * 1000;
+        let currentDayStartMs = startOfDay(new Date(firstTrayStartMs)).getTime();
+
+        while (currentDayStartMs < startOfTodayMs) {
+          generatedSessions.push({
+            id: `session-mock-${currentDayStartMs}-${Math.random().toString(36).substring(2, 5)}`,
+            start: currentDayStartMs + 1 * 60 * 60 * 1000,
+            end: currentDayStartMs + 23 * 60 * 60 * 1000,
+          });
+          currentDayStartMs += dayMs;
+        }
+
+        // 4. Initialize current state and session for today
+        const lastActionMs = now - lastActionMinutesAgo * 60 * 1000;
+
+        if (isWearingNow) {
+          generatedSessions.push({
+            id: `session-active-${Math.random().toString(36).substring(2, 5)}`,
+            start: lastActionMs,
+          });
+          set({
+            currentState: 'wearing',
+            lastTransition: lastActionMs,
+            sessions: generatedSessions,
+            trays: generatedTrays,
+            onboardingCompleted: true,
+            undoStack: null,
+          });
+        } else {
+          const todayOneAM = startOfTodayMs + 1 * 60 * 60 * 1000;
+          if (lastActionMs > todayOneAM) {
+            generatedSessions.push({
+              id: `session-today-before-${Math.random().toString(36).substring(2, 5)}`,
+              start: todayOneAM,
+              end: lastActionMs,
+            });
+          }
+          set({
+            currentState: 'out',
+            lastTransition: lastActionMs,
+            sessions: generatedSessions,
+            trays: generatedTrays,
+            onboardingCompleted: true,
+            undoStack: null,
+          });
+        }
+      },
+
       resetData: () => {
         set({
           currentState: 'out',
@@ -207,6 +295,7 @@ export const useStore = create<StoreState>()(
           sessions: [],
           trays: [getInitialTray()],
           settings: DEFAULT_SETTINGS,
+          onboardingCompleted: false,
           undoStack: null,
         });
       },
@@ -219,6 +308,7 @@ export const useStore = create<StoreState>()(
         sessions: state.sessions,
         trays: state.trays,
         settings: state.settings,
+        onboardingCompleted: state.onboardingCompleted,
       }),
     }
   )

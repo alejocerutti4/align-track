@@ -7,12 +7,14 @@ import { Tray } from './features/Tray';
 import { Settings } from './features/Settings';
 import { UndoToast } from './components/UndoToast';
 import { NotificationManager } from './components/NotificationManager';
+import { Onboarding } from './features/Onboarding';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import './App.css';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'home' | 'history' | 'tray' | 'settings'>('home');
   const darkModeSetting = useStore((state) => state.settings.darkMode);
+  const onboardingCompleted = useStore((state) => state.onboardingCompleted);
 
   // Register PWA service worker with automatic reload prompts
   const {
@@ -53,6 +55,14 @@ const App: React.FC = () => {
       return () => mediaQuery.removeEventListener('change', listener);
     }
   }, [darkModeSetting]);
+
+  if (!onboardingCompleted) {
+    return (
+      <div className="min-h-screen bg-brand-bg-light dark:bg-brand-bg-dark transition-colors duration-200">
+        <Onboarding />
+      </div>
+    );
+  }
 
   const renderActiveTab = () => {
     switch (activeTab) {
