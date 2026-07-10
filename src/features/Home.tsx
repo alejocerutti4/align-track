@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useStore } from '../store/useStore';
 import { calculateDailyWearTime, msToHoursAndMinutes, msToHoursMinutesAndSeconds, formatDurationString } from '../utils/timeCalculations';
 import { Play, Square } from 'lucide-react';
+import { startOfDay } from 'date-fns';
 
 export const Home: React.FC = () => {
   const currentState = useStore((state) => state.currentState);
@@ -33,6 +34,19 @@ export const Home: React.FC = () => {
   const { hours: remHours, minutes: remMinutes } = msToHoursAndMinutes(remainingMs);
 
   const compliance = goalMs > 0 ? (todayWearMs / goalMs) * 100 : 0;
+
+  // Out Today calculations
+  const startOfTodayMs = startOfDay(today).getTime();
+  const timeElapsedToday = now - startOfTodayMs;
+  const outMsToday = Math.max(0, timeElapsedToday - todayWearMs);
+  const { hours: outHours, minutes: outMinutes } = msToHoursAndMinutes(outMsToday);
+
+  // Out Remaining Budget calculations (Total Budget = 24h - Daily Goal)
+  const outBudgetMs = Math.max(0, (24 * 60 - settings.dailyGoalMinutes) * 60 * 1000);
+  const outRemainingMs = outBudgetMs - outMsToday;
+  const isOutOverBudget = outRemainingMs < 0;
+  
+  const { hours: outLeftHours, minutes: outLeftMinutes } = msToHoursAndMinutes(Math.abs(outRemainingMs));
 
   // Active duration (since last state change)
   const elapsedMs = now - lastTransition;
@@ -123,26 +137,39 @@ export const Home: React.FC = () => {
         </div>
       </div>
 
-      {/* Target & Stats Dashboard */}
-      <div className="grid grid-cols-3 gap-4 w-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl p-4 shadow-sm my-4 transition-colors">
-        <div className="text-center flex flex-col justify-center">
-          <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Worn Today</span>
-          <span className="text-lg font-bold text-zinc-800 dark:text-zinc-100 mt-1">
+      {/* Target & Stats Dashboard - 2x2 grid for cleaner representation */}
+      <div className="grid grid-cols-2 gap-3 w-full my-4">
+        {/* Worn Today */}
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-3.5 shadow-sm flex flex-col justify-center transition-colors">
+          <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Worn Today</span>
+          <span className="text-base font-extrabold text-zinc-800 dark:text-zinc-100 mt-0.5 tabular-nums">
             {formatDurationString(wornHours, wornMinutes)}
           </span>
         </div>
-        
-        <div className="text-center border-x border-zinc-100 dark:border-zinc-800 flex flex-col justify-center">
-          <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Daily Goal</span>
-          <span className="text-lg font-bold text-zinc-800 dark:text-zinc-100 mt-1">
-            {Math.round(settings.dailyGoalMinutes / 60)}h
+
+        {/* Goal Progress */}
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-3.5 shadow-sm flex flex-col justify-center transition-colors">
+          <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Goal Remaining</span>
+          <span className={`text-base font-extrabold mt-0.5 tabular-nums ${remainingMs === 0 ? 'text-brand-green' : 'text-zinc-800 dark:text-zinc-100'}`}>
+            {remainingMs === 0 ? 'Done! 🎉' : `${formatDurationString(remHours, remMinutes)}`}
           </span>
         </div>
 
-        <div className="text-center flex flex-col justify-center">
-          <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Remaining</span>
-          <span className={`text-lg font-bold mt-1 ${remainingMs === 0 ? 'text-brand-green' : 'text-zinc-800 dark:text-zinc-100'}`}>
-            {remainingMs === 0 ? 'Done! 🎉' : formatDurationString(remHours, remMinutes)}
+        {/* Out Today */}
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-3.5 shadow-sm flex flex-col justify-center transition-colors">
+          <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Out Today</span>
+          <span className="text-base font-extrabold text-zinc-800 dark:text-zinc-100 mt-0.5 tabular-nums">
+            {formatDurationString(outHours, outMinutes)}
+          </span>
+        </div>
+
+        {/* Out Budget Left */}
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-3.5 shadow-sm flex flex-col justify-center transition-colors">
+          <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Out Budget Left</span>
+          <span className={`text-base font-extrabold mt-0.5 tabular-nums ${isOutOverBudget ? 'text-brand-orange' : 'text-brand-green'}`}>
+            {isOutOverBudget 
+              ? `${formatDurationString(outLeftHours, outLeftMinutes)} over` 
+              : `${formatDurationString(outLeftHours, outLeftMinutes)} left`}
           </span>
         </div>
       </div>
