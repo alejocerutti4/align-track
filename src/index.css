@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-brand-bg-light: #F4F4F6;
+  --color-brand-bg-dark: #09090B;
+  --color-brand-card-light: #FFFFFF;
+  --color-brand-card-dark: #18181B;
+  --color-brand-border-light: #E4E4E7;
+  --color-brand-border-dark: #27272A;
+  --color-brand-accent-light: #18181B;
+  --color-brand-accent-dark: #F4F4F5;
+  --color-brand-green: #10B981;
+  --color-brand-green-light: #D1FAE5;
+  --color-brand-green-dark: #064E3B;
+  --color-brand-orange: #F97316;
+  --color-brand-orange-light: #FFEDD5;
+  --color-brand-orange-dark: #7C2D12;
+  
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply antialiased font-sans text-zinc-800 bg-brand-bg-light select-none transition-colors duration-200 overflow-x-hidden;
+  }
+  
+  .dark body {
+    @apply text-zinc-100 bg-brand-bg-dark;
+  }
+  
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* Tabular numbers for counters to avoid layout shifting */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* Custom scrollbars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Glowing ring animations */
+@keyframes breathe {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.35);
+  }
+}
+
+@keyframes breathe-orange {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(249, 115, 22, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(249, 115, 22, 0.35);
+  }
+}
+
+.breathe-green {
+  animation: breathe 4s infinite ease-in-out;
+}
+
+.breathe-orange {
+  animation: breathe-orange 4s infinite ease-in-out;
+}
