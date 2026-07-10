@@ -15,8 +15,8 @@ export const Onboarding: React.FC = () => {
     return `${y}-${m}-${dd}`;
   });
   const [isWearing, setIsWearing] = useState<boolean>(true);
-  const [elapsedHours, setElapsedHours] = useState<number>(1);
-  const [elapsedMinutes, setElapsedMinutes] = useState<number>(0);
+  const [outHours, setOutHours] = useState<number>(2);
+  const [outMinutes, setOutMinutes] = useState<number>(0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,14 +25,14 @@ export const Onboarding: React.FC = () => {
     const [year, month, day] = trayStartDate.split('-').map(Number);
     const startedAtMs = new Date(year, month - 1, day).getTime();
 
-    // Calculate elapsed minutes since last transition
-    const totalElapsedMinutes = elapsedHours * 60 + elapsedMinutes;
+    // Calculate out minutes today
+    const totalOutMinutes = outHours * 60 + outMinutes;
 
     completeOnboarding({
       currentTrayNum: trayNum,
       startedAtMs,
       isWearingNow: isWearing,
-      lastActionMinutesAgo: totalElapsedMinutes,
+      outMinutesToday: totalOutMinutes,
     });
   };
 
@@ -122,29 +122,27 @@ export const Onboarding: React.FC = () => {
           {/* Time elapsed action selector */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-              {isWearing
-                ? 'How long ago did you put them in?'
-                : 'How long ago did you take them out?'}
+              For how long have you NOT been wearing them today?
             </label>
             <div className="grid grid-cols-2 gap-2">
-              <div className="flex items-center gap-2 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 h-11 bg-white dark:bg-zinc-900">
+              <div className="flex items-center gap-2 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl px-3 h-11 bg-white dark:bg-zinc-900">
                 <input
                   type="number"
                   min="0"
                   max="23"
-                  value={elapsedHours}
-                  onChange={(e) => setElapsedHours(Math.max(0, Math.min(23, parseInt(e.target.value) || 0)))}
+                  value={outHours}
+                  onChange={(e) => setOutHours(Math.max(0, Math.min(23, parseInt(e.target.value) || 0)))}
                   className="w-full text-center bg-transparent text-sm focus:outline-none text-zinc-800 dark:text-zinc-100 font-bold"
                 />
                 <span className="text-xs text-zinc-400 font-semibold uppercase">hrs</span>
               </div>
-              <div className="flex items-center gap-2 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 h-11 bg-white dark:bg-zinc-900">
+              <div className="flex items-center gap-2 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl px-3 h-11 bg-white dark:bg-zinc-900">
                 <input
                   type="number"
                   min="0"
                   max="59"
-                  value={elapsedMinutes}
-                  onChange={(e) => setElapsedMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                  value={outMinutes}
+                  onChange={(e) => setOutMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
                   className="w-full text-center bg-transparent text-sm focus:outline-none text-zinc-800 dark:text-zinc-100 font-bold"
                 />
                 <span className="text-xs text-zinc-400 font-semibold uppercase">mins</span>

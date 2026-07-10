@@ -17,7 +17,7 @@ interface StoreState extends AppState {
     currentTrayNum: number;
     startedAtMs: number;
     isWearingNow: boolean;
-    lastActionMinutesAgo: number;
+    outMinutesToday: number;
   }) => void;
   resetData: () => void;
 }
@@ -209,7 +209,7 @@ export const useStore = create<StoreState>()(
       },
 
       completeOnboarding: (params) => {
-        const { currentTrayNum, startedAtMs, isWearingNow, lastActionMinutesAgo } = params;
+        const { currentTrayNum, startedAtMs, isWearingNow, outMinutesToday } = params;
         const now = Date.now();
 
         const generatedTrays: Tray[] = [];
@@ -253,33 +253,38 @@ export const useStore = create<StoreState>()(
         }
 
         // 4. Initialize current state and session for today
-        const lastActionMs = now - lastActionMinutesAgo * 60 * 1000;
+        const timeElapsedToday = now - startOfTodayMs;
+        const outMsToday = outMinutesToday * 60 * 1000;
+        const wornMsToday = Math.max(0, timeElapsedToday - outMsToday);
+
+        if (wornMsToday > 0) {
+          // Create a closed session representing the wear time earlier today
+          generatedSessions.push({
+            id: `session-today-worn-${Math.random().toString(36).substring(2, 5)}`,
+            start: startOfTodayMs + 1 * 60 * 60 * 1000, // starts at 1 AM
+            end: startOfTodayMs + 1 * 60 * 60 * 1000 + wornMsToday,
+          });
+        }
 
         if (isWearingNow) {
+          // Currently wearing: create an open session starting now
           generatedSessions.push({
             id: `session-active-${Math.random().toString(36).substring(2, 5)}`,
-            start: lastActionMs,
+            start: now,
           });
           set({
             currentState: 'wearing',
-            lastTransition: lastActionMs,
+            lastTransition: now,
             sessions: generatedSessions,
             trays: generatedTrays,
             onboardingCompleted: true,
             undoStack: null,
           });
         } else {
-          const todayOneAM = startOfTodayMs + 1 * 60 * 60 * 1000;
-          if (lastActionMs > todayOneAM) {
-            generatedSessions.push({
-              id: `session-today-before-${Math.random().toString(36).substring(2, 5)}`,
-              start: todayOneAM,
-              end: lastActionMs,
-            });
-          }
+          // Currently out: set state to out
           set({
             currentState: 'out',
-            lastTransition: lastActionMs,
+            lastTransition: now,
             sessions: generatedSessions,
             trays: generatedTrays,
             onboardingCompleted: true,
