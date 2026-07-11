@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useStore } from '../store/useStore';
 import { useTranslation } from '../utils/i18n';
-import { Download, Upload, RotateCcw, AlertTriangle, CheckCircle, Bell, ChevronDown, Check } from 'lucide-react';
+import { Download, Upload, RotateCcw, AlertTriangle, CheckCircle, ChevronDown, Check } from 'lucide-react';
 
 interface CustomSelectProps<T> {
   value: T;
@@ -78,17 +78,6 @@ export const Settings: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [resetConfirm, setResetConfirm] = useState(false);
-
-  // Request Notification Permissions helper
-  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(
-    'Notification' in window ? Notification.permission : 'denied'
-  );
-
-  const requestNotificationPermission = async () => {
-    if (!('Notification' in window)) return;
-    const res = await Notification.requestPermission();
-    setNotificationPermission(res);
-  };
 
   // Export state as JSON file
   const handleExport = () => {
@@ -179,23 +168,6 @@ export const Settings: React.FC = () => {
             />
           </div>
 
-          {/* Reminders Selector */}
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-              {t('settingsReminderInterval')}
-            </label>
-            <CustomSelect
-              value={settings.reminderMinutes}
-              onChange={(val) => updateSettings({ reminderMinutes: val })}
-              options={[
-                { value: 15, label: language === 'es' ? '15 minutos' : '15 minutes' },
-                { value: 30, label: language === 'es' ? '30 minutos' : '30 minutes' },
-                { value: 45, label: language === 'es' ? '45 minutos' : '45 minutes' },
-                { value: 60, label: language === 'es' ? '60 minutos' : '60 minutes' },
-              ]}
-            />
-          </div>
-
           {/* Clock format */}
           <div className="flex items-center justify-between pt-1">
             <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{t('settings24Hour')}</span>
@@ -260,32 +232,6 @@ export const Settings: React.FC = () => {
               ))}
             </div>
           </div>
-
-          {/* Notifications Permission prompt */}
-          {'Notification' in window && (
-            <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800 pt-4 mt-2">
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
-                  <Bell className="w-3.5 h-3.5 text-zinc-400" /> {language === 'es' ? 'Notificaciones' : 'Notifications'}
-                </span>
-                <span className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5">
-                  {notificationPermission === 'granted' 
-                    ? (language === 'es' ? 'Permitido' : 'Allowed') 
-                    : notificationPermission === 'denied' 
-                      ? (language === 'es' ? 'Bloqueado' : 'Blocked') 
-                      : (language === 'es' ? 'No Solicitado' : 'Not Requested')}
-                </span>
-              </div>
-              {notificationPermission !== 'granted' && (
-                <button
-                  onClick={requestNotificationPermission}
-                  className="text-xs font-bold text-brand-green bg-brand-green/10 hover:bg-brand-green/20 dark:bg-brand-green/20 px-3 py-1.5 rounded-lg active:scale-95 transition cursor-pointer"
-                >
-                  {language === 'es' ? 'Activar' : 'Enable'}
-                </button>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Backup & Administration Options */}

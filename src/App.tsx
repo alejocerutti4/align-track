@@ -6,7 +6,6 @@ import { History } from './features/History';
 import { Tray } from './features/Tray';
 import { Settings } from './features/Settings';
 import { UndoToast } from './components/UndoToast';
-import { NotificationManager } from './components/NotificationManager';
 import { Onboarding } from './features/Onboarding';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import './App.css';
@@ -105,7 +104,6 @@ const App: React.FC = () => {
       {/* Persistent global widgets */}
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
       <UndoToast />
-      <NotificationManager />
     </div>
   );
 };
