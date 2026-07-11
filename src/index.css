@@ -40,7 +40,6 @@
 /* Tabular numbers for counters to avoid layout shifting */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 /* Custom scrollbars */
