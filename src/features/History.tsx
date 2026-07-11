@@ -1,20 +1,26 @@
 import React, { useState } from 'react';
 import { useStore } from '../store/useStore';
+import { useTranslation } from '../utils/i18n';
 import { calculateDailyWearTime, msToHoursAndMinutes } from '../utils/timeCalculations';
 import { subDays, format, isSameDay } from 'date-fns';
+import { es, enUS } from 'date-fns/locale';
 import { ChevronRight, BarChart2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { DayDetail } from './DayDetail';
 
 export const History: React.FC = () => {
   const sessions = useStore((state) => state.sessions);
   const settings = useStore((state) => state.settings);
+  const { t, language } = useTranslation();
   
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  // Locale object
+  const currentLocale = language === 'es' ? es : enUS;
 
   // Generate list of the last 14 days
   const historyDays = Array.from({ length: 14 }).map((_, i) => subDays(new Date(), i));
 
-  // Generate list of the last 7 days (reverse to show chronological Mon -> Sun order)
+  // Generate list of the last 7 days (reverse to show chronological order)
   const last7Days = Array.from({ length: 7 }).map((_, i) => subDays(new Date(), i)).reverse();
   
   // Minimal safe limit is 20 hours
@@ -26,7 +32,7 @@ export const History: React.FC = () => {
     return {
       date,
       wearMs,
-      label: format(date, 'eeeee'), // Single character (e.g. M, T, W)
+      label: format(date, 'eeeee', { locale: currentLocale }), // Single character day name
       isSafe: wearMs >= MIN_SAFE_MS,
     };
   });
@@ -51,10 +57,10 @@ export const History: React.FC = () => {
       {/* Header */}
       <div className="w-full mb-6 mt-4">
         <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-          History & Analytics
+          {t('historyTitle')}
         </h1>
         <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-          Monitor your compliance statistics and daily metrics.
+          {t('historySubtitle')}
         </p>
       </div>
 
@@ -64,7 +70,7 @@ export const History: React.FC = () => {
         <div className="flex items-start justify-between">
           <div className="flex flex-col">
             <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider flex items-center gap-1">
-              <BarChart2 className="w-3.5 h-3.5" /> 7-Day Average
+              <BarChart2 className="w-3.5 h-3.5" /> {t('stats7DayAverage')}
             </span>
             <span className="text-3xl font-extrabold text-zinc-800 dark:text-zinc-100 mt-1.5 tabular-nums">
               {avgHours}h {avgMinutes}m
@@ -73,7 +79,7 @@ export const History: React.FC = () => {
 
           {/* Compliance Status Badge */}
           <div className="flex flex-col items-end">
-            <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Status</span>
+            <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">{t('status')}</span>
             <div 
               className={`flex items-center gap-1 text-xs font-bold mt-2 px-2.5 py-1 rounded-full ${
                 isAvgSafe 
@@ -84,12 +90,12 @@ export const History: React.FC = () => {
               {isAvgSafe ? (
                 <>
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Safe</span>
+                  <span>{t('statusSafe')}</span>
                 </>
               ) : (
                 <>
                   <AlertCircle className="w-3.5 h-3.5" />
-                  <span>Low Wear</span>
+                  <span>{t('statusLow')}</span>
                 </>
               )}
             </div>
@@ -98,7 +104,7 @@ export const History: React.FC = () => {
 
         {/* Minimal Safe indicator description */}
         <p className="text-xs text-zinc-400 dark:text-zinc-500 leading-normal border-t border-zinc-100 dark:border-zinc-800 pt-3">
-          Your average is <strong className={isAvgSafe ? 'text-brand-green' : 'text-brand-orange'}>{isAvgSafe ? 'above' : 'below'}</strong> the minimal safe wearing time of <strong>20 hours/day</strong>.
+          {isAvgSafe ? t('complianceReportSafe') : t('complianceReportLow')}
         </p>
 
         {/* The Bar Chart */}
@@ -109,7 +115,7 @@ export const History: React.FC = () => {
             style={{ bottom: '83.33%' }}
           >
             <span className="absolute right-0 -top-2.5 bg-white dark:bg-zinc-900 px-1 text-[8px] font-bold text-red-500/70 dark:text-red-400/70 uppercase tracking-wider">
-              Min Safe (20h)
+              {t('minSafeLabel')}
             </span>
           </div>
 
@@ -119,14 +125,13 @@ export const History: React.FC = () => {
             style={{ bottom: `${(settings.dailyGoalMinutes / (24 * 60)) * 100}%` }}
           >
             <span className="absolute left-0 -top-2.5 bg-white dark:bg-zinc-900 px-1 text-[8px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
-              Goal
+              {t('goalLabel')}
             </span>
           </div>
 
           {/* Daily Bars */}
           {last7DaysData.map((day) => {
             const dayMs = 24 * 60 * 60 * 1000;
-            // Height calculation capped at 100%
             const heightPercent = Math.max(3, Math.min(100, (day.wearMs / dayMs) * 100));
 
             return (
@@ -167,7 +172,7 @@ export const History: React.FC = () => {
 
       {/* Log list of past days */}
       <h2 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-3">
-        Compliance Logs
+        {t('complianceLogs')}
       </h2>
       
       <div className="space-y-3 w-full">
@@ -177,14 +182,14 @@ export const History: React.FC = () => {
           const { hours, minutes } = msToHoursAndMinutes(todayWearMs);
           const compliance = goalMs > 0 ? Math.round((todayWearMs / goalMs) * 100) : 0;
 
-          let dayLabel = format(date, 'EEEE, MMMM d');
+          let dayLabel = format(date, 'EEEE, MMMM d', { locale: currentLocale });
           const isToday = isSameDay(date, new Date());
           const isYesterday = isSameDay(date, subDays(new Date(), 1));
 
           if (isToday) {
-            dayLabel = 'Today';
+            dayLabel = t('today');
           } else if (isYesterday) {
-            dayLabel = 'Yesterday';
+            dayLabel = t('yesterday');
           }
 
           const hasData = todayWearMs > 0;
@@ -200,7 +205,7 @@ export const History: React.FC = () => {
                   {dayLabel}
                 </span>
                 <span className="text-xs text-zinc-400 dark:text-zinc-500">
-                  {hasData ? `${hours}h ${minutes}m worn` : 'No transitions recorded'}
+                  {hasData ? `${hours}h ${minutes}m ${t('wornLabel')}` : t('noTransitionsRecorded')}
                 </span>
               </div>
               

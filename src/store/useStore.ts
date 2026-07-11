@@ -27,6 +27,7 @@ const DEFAULT_SETTINGS: Settings = {
   dailyGoalMinutes: 22 * 60, // 22 hours
   use24HourClock: false,
   darkMode: 'system',
+  language: 'en',
 };
 
 const getInitialTray = (): Tray => ({

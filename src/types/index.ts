@@ -16,6 +16,7 @@ export interface Settings {
   dailyGoalMinutes: number;
   use24HourClock: boolean;
   darkMode: 'system' | 'light' | 'dark';
+  language: 'en' | 'es';
 }
 
 export interface AppState {

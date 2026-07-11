@@ -1,0 +1,251 @@
+import { useStore } from '../store/useStore';
+
+export const translations = {
+  en: {
+    // Navigation
+    tabHome: 'Home',
+    tabHistory: 'History',
+    tabTray: 'Tray',
+    tabSettings: 'Settings',
+
+    // Onboarding
+    onboardingWelcome: 'Welcome to AlignTrack',
+    onboardingConfig: 'Initial Configuration',
+    onboardingTrayQuestion: 'What tray are you currently on?',
+    onboardingDateQuestion: 'When did you start this tray?',
+    onboardingWearingQuestion: 'Are you wearing your aligners right now?',
+    onboardingWearingYes: 'Yes, Wearing',
+    onboardingWearingNo: 'No, Out',
+    onboardingOutTimeQuestion: 'For how long have you NOT been wearing them today?',
+    onboardingBackfillInfo: 'We will backfill previous days in your history with exactly 22 hours of wear time. This ensures your compliance statistics and tracking history are immediately accurate!',
+    onboardingSubmit: 'Start Tracking',
+    hrs: 'hrs',
+    mins: 'mins',
+
+    // Home
+    homeTitle: 'AlignTrack',
+    wornToday: 'Worn Today',
+    goalRemaining: 'Goal Remaining',
+    outToday: 'Out Today',
+    outBudgetLeft: 'Out Budget Left',
+    done: 'Done! 🎉',
+    left: 'left',
+    over: 'over',
+    statusWearing: 'Wearing',
+    statusOut: 'Out',
+    sessionCurrent: 'Current Session',
+    sessionTimeOut: 'Time out of mouth',
+    actionTakeOut: 'Take them out',
+    actionPutIn: 'Put them in',
+    eventPutIn: 'Put in',
+    eventTookOut: 'Took out',
+
+    // History
+    historyTitle: 'History & Analytics',
+    historySubtitle: 'Monitor your compliance statistics and daily metrics.',
+    stats7DayAverage: '7-Day Average',
+    status: 'Status',
+    statusSafe: 'Safe',
+    statusLow: 'Low Wear',
+    complianceReportSafe: 'Your average is above the minimal safe wearing time of 20 hours/day.',
+    complianceReportLow: 'Your average is below the minimal safe wearing time of 20 hours/day.',
+    minSafeLabel: 'Min Safe (20h)',
+    goalLabel: 'Goal',
+    complianceLogs: 'Compliance Logs',
+    wornLabel: 'worn',
+    noTransitionsRecorded: 'No transitions recorded',
+    today: 'Today',
+    yesterday: 'Yesterday',
+
+    // DayDetail
+    dayDetailTitle: 'Daily Timeline',
+    dayDetailTotalWear: 'Total Wear Time',
+    dayDetailSessions: 'Sessions',
+    dayDetailWorn: 'Worn',
+    dayDetailOut: 'Out',
+    dayDetailActiveSession: 'Active session...',
+    dayDetailOutOfMouth: 'Out of mouth...',
+    dayDetailNoData: 'No data logged for this day',
+    back: 'Back',
+
+    // Tray
+    trayTrackerTitle: 'Aligner Tray Tracker',
+    activeAlignerCard: 'Active Aligner',
+    trayNumberLabel: 'Tray',
+    expectedEndDate: 'Expected End Date',
+    startedLabel: 'Started',
+    endsLabel: 'Ends',
+    progressLabel: 'Progress',
+    dayXofY: 'Day {x} of {y}',
+    switchToNextTray: 'Switch to Next Tray',
+    edit: 'Edit',
+    save: 'Save',
+    cancel: 'Cancel',
+    previousTrays: 'Previous Trays',
+    addNextTray: 'Add Next Tray',
+    wearDuration: 'Wear Duration (Days)',
+    startDate: 'Start Date',
+    endDate: 'End Date',
+    noPreviousTrays: 'No previous trays recorded',
+
+    // Settings
+    settingsTitle: 'Settings',
+    settingsGeneral: 'General Settings',
+    settingsDailyGoal: 'Daily Wear Goal',
+    settingsReminderInterval: 'Wear Reminder Interval',
+    settingsReminderSuffix: 'notify after {m} minutes',
+    settings24Hour: '24-Hour Clock',
+    settingsLanguage: 'Language',
+    settingsAppearance: 'Appearance',
+    settingsAppearanceLight: 'Light',
+    settingsAppearanceDark: 'Dark',
+    settingsAppearanceSystem: 'System',
+    settingsDataManagement: 'Data Management',
+    settingsExport: 'Export Data',
+    settingsExportSub: 'Download backup file',
+    settingsImport: 'Import Data',
+    settingsImportSub: 'Upload backup file',
+    settingsReset: 'Reset All Data',
+    settingsResetSub: 'This action is permanent and cannot be undone. All histories and configurations will be cleared.',
+    settingsResetBtn: 'Reset',
+    settingsResetConfirm: 'Are you absolutely sure you want to reset all data?',
+    settingsUndoLabel: 'Undo',
+    settingsToastUndone: 'Action undone',
+    settingsToastImportSuccess: 'Data imported successfully',
+    settingsToastImportError: 'Invalid backup file',
+    settingsToastResetSuccess: 'Alignment tracker reset completed',
+  },
+  es: {
+    // Navigation
+    tabHome: 'Inicio',
+    tabHistory: 'Historial',
+    tabTray: 'Férula',
+    tabSettings: 'Ajustes',
+
+    // Onboarding
+    onboardingWelcome: 'Bienvenido a AlignTrack',
+    onboardingConfig: 'Configuración Inicial',
+    onboardingTrayQuestion: '¿En qué férula estás actualmente?',
+    onboardingDateQuestion: '¿Cuándo empezaste esta férula?',
+    onboardingWearingQuestion: '¿Tienes puestas tus férulas ahora mismo?',
+    onboardingWearingYes: 'Sí, Puestas',
+    onboardingWearingNo: 'No, Fuera',
+    onboardingOutTimeQuestion: '¿Por cuánto tiempo NO las has usado hoy?',
+    onboardingBackfillInfo: 'Llenaremos los días anteriores en tu historial con exactamente 22 horas de uso. ¡Esto asegura que tus estadísticas e historial de registro sean correctos de inmediato!',
+    onboardingSubmit: 'Comenzar a Registrar',
+    hrs: 'hrs',
+    mins: 'mins',
+
+    // Home
+    homeTitle: 'AlignTrack',
+    wornToday: 'Uso Hoy',
+    goalRemaining: 'Meta Restante',
+    outToday: 'Fuera Hoy',
+    outBudgetLeft: 'Límite Fuera Restante',
+    done: '¡Listo! 🎉',
+    left: 'restante',
+    over: 'de más',
+    statusWearing: 'Puestas',
+    statusOut: 'Fuera',
+    sessionCurrent: 'Sesión Actual',
+    sessionTimeOut: 'Tiempo fuera de boca',
+    actionTakeOut: 'Quitar férulas',
+    actionPutIn: 'Poner férulas',
+    eventPutIn: 'Puestas',
+    eventTookOut: 'Quitadas',
+
+    // History
+    historyTitle: 'Historial y Análisis',
+    historySubtitle: 'Supervisa tus estadísticas de cumplimiento y métricas diarias.',
+    stats7DayAverage: 'Promedio de 7 Días',
+    status: 'Estado',
+    statusSafe: 'Seguro',
+    statusLow: 'Uso Bajo',
+    complianceReportSafe: 'Tu promedio está por encima del tiempo de uso mínimo seguro de 20 horas/día.',
+    complianceReportLow: 'Tu promedio está por debajo del tiempo de uso mínimo seguro de 20 horas/día.',
+    minSafeLabel: 'Mín. Seguro (20h)',
+    goalLabel: 'Meta',
+    complianceLogs: 'Registros de Cumplimiento',
+    wornLabel: 'usado',
+    noTransitionsRecorded: 'Sin registros grabados',
+    today: 'Hoy',
+    yesterday: 'Ayer',
+
+    // DayDetail
+    dayDetailTitle: 'Línea de Tiempo Diaria',
+    dayDetailTotalWear: 'Tiempo Total de Uso',
+    dayDetailSessions: 'Sesiones',
+    dayDetailWorn: 'Usado',
+    dayDetailOut: 'Fuera',
+    dayDetailActiveSession: 'Sesión activa...',
+    dayDetailOutOfMouth: 'Fuera de la boca...',
+    dayDetailNoData: 'No hay datos registrados para este día',
+    back: 'Atrás',
+
+    // Tray
+    trayTrackerTitle: 'Seguimiento de Férulas',
+    activeAlignerCard: 'Férula Activa',
+    trayNumberLabel: 'Férula',
+    expectedEndDate: 'Fecha Final Prevista',
+    startedLabel: 'Empezó',
+    endsLabel: 'Termina',
+    progressLabel: 'Progreso',
+    dayXofY: 'Día {x} de {y}',
+    switchToNextTray: 'Pasar a la Siguiente Férula',
+    edit: 'Editar',
+    save: 'Guardar',
+    cancel: 'Cancelar',
+    previousTrays: 'Férulas Anteriores',
+    addNextTray: 'Agregar Siguiente Férula',
+    wearDuration: 'Duración de Uso (Días)',
+    startDate: 'Fecha de Inicio',
+    endDate: 'Fecha de Finalización',
+    noPreviousTrays: 'No hay férulas anteriores registradas',
+
+    // Settings
+    settingsTitle: 'Ajustes',
+    settingsGeneral: 'Ajustes Generales',
+    settingsDailyGoal: 'Meta Diaria de Uso',
+    settingsReminderInterval: 'Recordatorio de Colocación',
+    settingsReminderSuffix: 'notificar después de {m} minutos',
+    settings24Hour: 'Reloj de 24 Horas',
+    settingsLanguage: 'Idioma',
+    settingsAppearance: 'Apariencia',
+    settingsAppearanceLight: 'Claro',
+    settingsAppearanceDark: 'Oscuro',
+    settingsAppearanceSystem: 'Sistema',
+    settingsDataManagement: 'Gestión de Datos',
+    settingsExport: 'Exportar Datos',
+    settingsExportSub: 'Descargar copia de seguridad',
+    settingsImport: 'Importar Datos',
+    settingsImportSub: 'Subir copia de seguridad',
+    settingsReset: 'Restablecer Todos los Datos',
+    settingsResetSub: 'Esta acción es permanente y no se puede deshacer. Se borrarán todos los historiales y configuraciones.',
+    settingsResetBtn: 'Restablecer',
+    settingsResetConfirm: '¿Estás absolutamente seguro de que deseas restablecer todos los datos?',
+    settingsUndoLabel: 'Deshacer',
+    settingsToastUndone: 'Acción deshecha',
+    settingsToastImportSuccess: 'Datos importados con éxito',
+    settingsToastImportError: 'Archivo de copia de seguridad inválido',
+    settingsToastResetSuccess: 'Restablecimiento completado',
+  },
+};
+
+export const useTranslation = () => {
+  const language = useStore((state) => state.settings.language) || 'en';
+  
+  const t = (key: keyof typeof translations.en, replacements?: Record<string, string | number>) => {
+    const langDict = translations[language] || translations.en;
+    let translationString = langDict[key] || translations.en[key] || String(key);
+    
+    if (replacements) {
+      Object.entries(replacements).forEach(([k, val]) => {
+        translationString = translationString.replace(`{${k}}`, String(val));
+      });
+    }
+    
+    return translationString;
+  };
+
+  return { t, language };
+};

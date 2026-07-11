@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useStore } from '../store/useStore';
-import { calculateDailyWearTime, msToHoursAndMinutes, msToHoursMinutesAndSeconds, formatDurationString } from '../utils/timeCalculations';
+import { useTranslation } from '../utils/i18n';
+import { calculateDailyWearTime, msToHoursAndMinutes, msToHoursMinutesAndSeconds } from '../utils/timeCalculations';
 import { Play, Square } from 'lucide-react';
 import { startOfDay } from 'date-fns';
 
@@ -11,6 +12,7 @@ export const Home: React.FC = () => {
   const settings = useStore((state) => state.settings);
   const putIn = useStore((state) => state.putIn);
   const takeOut = useStore((state) => state.takeOut);
+  const { t, language } = useTranslation();
 
   // Trigger re-render every second to update stopwatch and daily totals
   const [_tick, setTick] = useState(0);
@@ -57,6 +59,15 @@ export const Home: React.FC = () => {
     return `${pad(h)}:${pad(m)}:${pad(s)}`;
   };
 
+  const getFormatDurationString = (h: number, m: number) => {
+    const hrSuffix = t('hrs');
+    const minSuffix = t('mins');
+    if (h === 0 && m === 0) return `0 ${minSuffix}`;
+    if (h === 0) return `${m}${minSuffix}`;
+    if (m === 0) return `${h}${hrSuffix}`;
+    return `${h}${hrSuffix} ${m}${minSuffix}`;
+  };
+
   // SVG Circular Ring parameters
   const radius = 85;
   const stroke = 8;
@@ -68,14 +79,14 @@ export const Home: React.FC = () => {
   const isWearing = currentState === 'wearing';
 
   return (
-    <div className="flex flex-col items-center justify-between min-h-[calc(100vh-4rem)] p-6 pb-24 max-w-md mx-auto">
+    <div className="flex flex-col items-center justify-between min-h-[calc(100vh-4rem)] p-6 pb-24 max-w-md mx-auto animate-fade-in">
       {/* Top Header info */}
       <div className="w-full text-center mt-4 mb-2">
         <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-          AlignTrack
+          {t('homeTitle')}
         </h1>
         <p className="text-xs text-zinc-400 dark:text-zinc-500 font-medium tracking-wider uppercase mt-1">
-          {today.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
+          {today.toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
         </p>
       </div>
 
@@ -122,7 +133,7 @@ export const Home: React.FC = () => {
             }`}
           >
             <span className={`w-2 h-2 rounded-full ${isWearing ? 'bg-brand-green animate-pulse' : 'bg-brand-orange'}`} />
-            {isWearing ? 'Wearing' : 'Out'}
+            {isWearing ? t('statusWearing') : t('statusOut')}
           </span>
 
           {/* Stopwatch Ticks */}
@@ -132,7 +143,7 @@ export const Home: React.FC = () => {
 
           {/* Helper label */}
           <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 mt-2 uppercase tracking-wide">
-            {isWearing ? 'Current Session' : 'Time out of mouth'}
+            {isWearing ? t('sessionCurrent') : t('sessionTimeOut')}
           </span>
         </div>
       </div>
@@ -141,35 +152,35 @@ export const Home: React.FC = () => {
       <div className="grid grid-cols-2 gap-3 w-full my-4">
         {/* Worn Today */}
         <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-3.5 shadow-sm flex flex-col justify-center transition-colors">
-          <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Worn Today</span>
+          <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">{t('wornToday')}</span>
           <span className="text-base font-extrabold text-zinc-800 dark:text-zinc-100 mt-0.5 tabular-nums">
-            {formatDurationString(wornHours, wornMinutes)}
+            {getFormatDurationString(wornHours, wornMinutes)}
           </span>
         </div>
 
         {/* Goal Progress */}
         <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-3.5 shadow-sm flex flex-col justify-center transition-colors">
-          <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Goal Remaining</span>
+          <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">{t('goalRemaining')}</span>
           <span className={`text-base font-extrabold mt-0.5 tabular-nums ${remainingMs === 0 ? 'text-brand-green' : 'text-zinc-800 dark:text-zinc-100'}`}>
-            {remainingMs === 0 ? 'Done! 🎉' : `${formatDurationString(remHours, remMinutes)}`}
+            {remainingMs === 0 ? t('done') : getFormatDurationString(remHours, remMinutes)}
           </span>
         </div>
 
         {/* Out Today */}
         <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-3.5 shadow-sm flex flex-col justify-center transition-colors">
-          <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Out Today</span>
+          <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">{t('outToday')}</span>
           <span className="text-base font-extrabold text-zinc-800 dark:text-zinc-100 mt-0.5 tabular-nums">
-            {formatDurationString(outHours, outMinutes)}
+            {getFormatDurationString(outHours, outMinutes)}
           </span>
         </div>
 
         {/* Out Budget Left */}
         <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl p-3.5 shadow-sm flex flex-col justify-center transition-colors">
-          <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Out Budget Left</span>
+          <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">{t('outBudgetLeft')}</span>
           <span className={`text-base font-extrabold mt-0.5 tabular-nums ${isOutOverBudget ? 'text-brand-orange' : 'text-brand-green'}`}>
             {isOutOverBudget 
-              ? `${formatDurationString(outLeftHours, outLeftMinutes)} over` 
-              : `${formatDurationString(outLeftHours, outLeftMinutes)} left`}
+              ? `${getFormatDurationString(outLeftHours, outLeftMinutes)} ${t('over')}` 
+              : `${getFormatDurationString(outLeftHours, outLeftMinutes)} ${t('left')}`}
           </span>
         </div>
       </div>
@@ -182,7 +193,7 @@ export const Home: React.FC = () => {
             className="flex items-center justify-center gap-2.5 w-full h-14 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 font-semibold rounded-full shadow-lg hover:bg-brand-orange hover:text-white dark:hover:bg-brand-orange dark:hover:text-white transition-all active:scale-[0.97] cursor-pointer"
           >
             <Square className="w-4 h-4 fill-current stroke-none" />
-            Take them out
+            {t('actionTakeOut')}
           </button>
         ) : (
           <button
@@ -190,11 +201,12 @@ export const Home: React.FC = () => {
             className="flex items-center justify-center gap-2.5 w-full h-14 bg-brand-green text-white font-semibold rounded-full shadow-lg hover:bg-emerald-600 transition-all active:scale-[0.97] cursor-pointer"
           >
             <Play className="w-4 h-4 fill-current" />
-            Put them in
+            {t('actionPutIn')}
           </button>
         )}
       </div>
     </div>
   );
 };
+
 export default Home;

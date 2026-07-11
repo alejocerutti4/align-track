@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useStore } from '../store/useStore';
+import { useTranslation } from '../utils/i18n';
 import { format } from 'date-fns';
+import { es, enUS } from 'date-fns/locale';
 import { Calendar, Plus, Edit2, Check, X } from 'lucide-react';
 import type { Tray as TrayType } from '../types';
 
@@ -21,6 +23,7 @@ export const Tray: React.FC = () => {
   const trays = useStore((state) => state.trays);
   const nextTray = useStore((state) => state.nextTray);
   const updateTray = useStore((state) => state.updateTray);
+  const { t, language } = useTranslation();
 
   // Re-render check every minute
   const [_tick, setTick] = useState(0);
@@ -36,6 +39,8 @@ export const Tray: React.FC = () => {
   const [editNumber, setEditNumber] = useState<number>(1);
   const [editStart, setEditStart] = useState<string>('');
   const [editEnd, setEditEnd] = useState<string>('');
+
+  const currentLocale = language === 'es' ? es : enUS;
 
   const startEdit = (tray: TrayType) => {
     setEditingTrayId(tray.id);
@@ -59,7 +64,7 @@ export const Tray: React.FC = () => {
   if (!activeTray) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] p-6 pb-24 max-w-md mx-auto text-center">
-        <span className="text-sm text-zinc-500">No active tray tracker found.</span>
+        <span className="text-sm text-zinc-500">{t('noPreviousTrays')}</span>
       </div>
     );
   }
@@ -78,10 +83,12 @@ export const Tray: React.FC = () => {
         {/* Header */}
         <div className="w-full mb-6 mt-4">
           <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-            Tray Tracker
+            {t('trayTrackerTitle')}
           </h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-            Track your current tray progress and switch schedule.
+            {language === 'es' 
+              ? 'Monitorea el progreso de tu férula actual y el calendario de cambios.' 
+              : 'Track your current tray progress and switch schedule.'}
           </p>
         </div>
 
@@ -90,19 +97,21 @@ export const Tray: React.FC = () => {
           {isEditingActive ? (
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Editing Active Aligner</span>
+                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                  {language === 'es' ? 'Editando Férula Activa' : 'Editing Active Aligner'}
+                </span>
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleSave(activeTray.id)}
                     className="p-1.5 bg-brand-green/10 hover:bg-brand-green/20 text-brand-green rounded-lg transition cursor-pointer"
-                    title="Save"
+                    title={t('save')}
                   >
                     <Check className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setEditingTrayId(null)}
                     className="p-1.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-500 rounded-lg transition cursor-pointer"
-                    title="Cancel"
+                    title={t('cancel')}
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -110,7 +119,7 @@ export const Tray: React.FC = () => {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Tray Number</label>
+                <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">{t('trayNumberLabel')}</label>
                 <input
                   type="number"
                   value={editNumber}
@@ -121,7 +130,7 @@ export const Tray: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Started</label>
+                  <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">{t('startedLabel')}</label>
                   <input
                     type="date"
                     value={editStart}
@@ -130,7 +139,7 @@ export const Tray: React.FC = () => {
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Expected End</label>
+                  <label className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">{t('endsLabel')}</label>
                   <input
                     type="date"
                     value={editEnd}
@@ -145,24 +154,28 @@ export const Tray: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex flex-col">
                   <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
-                    Current Aligner
+                    {t('activeAlignerCard')}
                     <button
                       onClick={() => startEdit(activeTray)}
                       className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition cursor-pointer"
-                      title="Edit active tray"
+                      title={t('edit')}
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
                   </span>
                   <span className="text-3xl font-extrabold text-zinc-800 dark:text-zinc-100 mt-1">
-                    Tray {activeTray.number}
+                    {t('trayNumberLabel')} {activeTray.number}
                   </span>
                 </div>
                 
                 <div className="flex flex-col items-end">
-                  <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Time Remaining</span>
+                  <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                    {language === 'es' ? 'Tiempo Restante' : 'Time Remaining'}
+                  </span>
                   <span className="text-sm font-bold text-brand-green mt-2 bg-brand-green/10 dark:bg-brand-green/20 px-2.5 py-1 rounded-full">
-                    {daysLeft} {daysLeft === 1 ? 'day' : 'days'} left
+                    {language === 'es' 
+                      ? `${daysLeft} ${daysLeft === 1 ? 'día' : 'días'} restantes` 
+                      : `${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`}
                   </span>
                 </div>
               </div>
@@ -172,9 +185,9 @@ export const Tray: React.FC = () => {
                 <div className="flex items-start gap-2.5">
                   <Calendar className="w-4 h-4 text-zinc-400 mt-0.5" />
                   <div className="flex flex-col">
-                    <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Started</span>
+                    <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">{t('startedLabel')}</span>
                     <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mt-0.5">
-                      {format(new Date(activeTray.startedAt), 'MMMM d, yyyy')}
+                      {format(new Date(activeTray.startedAt), 'MMMM d, yyyy', { locale: currentLocale })}
                     </span>
                   </div>
                 </div>
@@ -182,9 +195,9 @@ export const Tray: React.FC = () => {
                 <div className="flex items-start gap-2.5">
                   <Calendar className="w-4 h-4 text-zinc-400 mt-0.5" />
                   <div className="flex flex-col">
-                    <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">Expected End</span>
+                    <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">{t('expectedEndDate')}</span>
                     <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mt-0.5">
-                      {format(new Date(activeTray.expectedEnd), 'MMMM d, yyyy')}
+                      {format(new Date(activeTray.expectedEnd), 'MMMM d, yyyy', { locale: currentLocale })}
                     </span>
                   </div>
                 </div>
@@ -193,7 +206,7 @@ export const Tray: React.FC = () => {
               {/* Progress Section */}
               <div className="space-y-2.5 pt-2">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="font-semibold text-zinc-500 dark:text-zinc-400">Tray Progress</span>
+                  <span className="font-semibold text-zinc-500 dark:text-zinc-400">{t('progressLabel')}</span>
                   <span className="font-bold text-zinc-700 dark:text-zinc-200">{Math.round(progressPercent)}%</span>
                 </div>
                 {/* Elegant Progress bar wrapper */}
@@ -212,7 +225,7 @@ export const Tray: React.FC = () => {
         {trays.length > 1 && (
           <div className="mt-8">
             <h2 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-3">
-              Previous Trays
+              {t('previousTrays')}
             </h2>
             <div className="space-y-2 max-h-48 overflow-y-auto no-scrollbar">
               {trays.slice(0, -1).reverse().map((tray) => {
@@ -263,15 +276,15 @@ export const Tray: React.FC = () => {
                       </div>
                     ) : (
                       <>
-                        <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">Tray {tray.number}</span>
+                        <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">{t('trayNumberLabel')} {tray.number}</span>
                         <div className="flex items-center gap-3">
                           <span className="text-xs text-zinc-400 dark:text-zinc-500 font-medium">
-                            {format(new Date(tray.startedAt), 'MMM d')} – {format(new Date(tray.expectedEnd), 'MMM d')}
+                            {format(new Date(tray.startedAt), 'MMM d', { locale: currentLocale })} – {format(new Date(tray.expectedEnd), 'MMM d', { locale: currentLocale })}
                           </span>
                           <button
                             onClick={() => startEdit(tray)}
                             className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition cursor-pointer"
-                            title="Edit this tray"
+                            title={t('edit')}
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
@@ -293,7 +306,7 @@ export const Tray: React.FC = () => {
           className="flex items-center justify-center gap-2 w-full h-14 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 font-semibold rounded-full shadow-lg hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all active:scale-[0.97] cursor-pointer"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
-          Next Tray
+          {t('addNextTray')}
         </button>
       </div>
     </div>

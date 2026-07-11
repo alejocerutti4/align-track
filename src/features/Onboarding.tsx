@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useStore } from '../store/useStore';
+import { useTranslation } from '../utils/i18n';
 import { Play, Square, Layers, Info } from 'lucide-react';
 
 export const Onboarding: React.FC = () => {
   const completeOnboarding = useStore((state) => state.completeOnboarding);
+  const { t } = useTranslation();
 
   // Form states
   const [trayNum, setTrayNum] = useState<number>(1);
@@ -45,10 +47,10 @@ export const Onboarding: React.FC = () => {
             <Layers className="w-6 h-6 text-brand-green" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-            Welcome to AlignTrack
+            {t('onboardingWelcome')}
           </h1>
           <p className="text-xs text-zinc-400 dark:text-zinc-500 font-medium tracking-wide uppercase mt-1">
-            Initial Configuration
+            {t('onboardingConfig')}
           </p>
         </div>
 
@@ -56,7 +58,7 @@ export const Onboarding: React.FC = () => {
           {/* Aligner Input */}
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-              What tray are you currently on?
+              {t('onboardingTrayQuestion')}
             </label>
             <div className="relative">
               <input
@@ -73,7 +75,7 @@ export const Onboarding: React.FC = () => {
           {/* Start Date input */}
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-              When did you start this tray?
+              {t('onboardingDateQuestion')}
             </label>
             <div className="relative">
               <input
@@ -89,7 +91,7 @@ export const Onboarding: React.FC = () => {
           {/* Current state selector */}
           <div className="flex flex-col gap-2 pt-1">
             <label className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-              Are you wearing your aligners right now?
+              {t('onboardingWearingQuestion')}
             </label>
             <div className="grid grid-cols-2 gap-2 bg-zinc-100 dark:bg-zinc-950 p-1 rounded-xl">
               <button
@@ -102,7 +104,7 @@ export const Onboarding: React.FC = () => {
                 }`}
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
-                Yes, Wearing
+                {t('onboardingWearingYes')}
               </button>
               <button
                 type="button"
@@ -114,7 +116,7 @@ export const Onboarding: React.FC = () => {
                 }`}
               >
                 <Square className="w-3.5 h-3.5 fill-current stroke-none" />
-                No, Out
+                {t('onboardingWearingNo')}
               </button>
             </div>
           </div>
@@ -122,7 +124,7 @@ export const Onboarding: React.FC = () => {
           {/* Time elapsed action selector */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-              For how long have you NOT been wearing them today?
+              {t('onboardingOutTimeQuestion')}
             </label>
             <div className="grid grid-cols-2 gap-2">
               <div className="flex items-center gap-2 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl px-3 h-11 bg-white dark:bg-zinc-900">
@@ -134,7 +136,7 @@ export const Onboarding: React.FC = () => {
                   onChange={(e) => setOutHours(Math.max(0, Math.min(23, parseInt(e.target.value) || 0)))}
                   className="w-full text-center bg-transparent text-sm focus:outline-none text-zinc-800 dark:text-zinc-100 font-bold"
                 />
-                <span className="text-xs text-zinc-400 font-semibold uppercase">hrs</span>
+                <span className="text-xs text-zinc-400 font-semibold uppercase">{t('hrs')}</span>
               </div>
               <div className="flex items-center gap-2 border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl px-3 h-11 bg-white dark:bg-zinc-900">
                 <input
@@ -145,7 +147,7 @@ export const Onboarding: React.FC = () => {
                   onChange={(e) => setOutMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
                   className="w-full text-center bg-transparent text-sm focus:outline-none text-zinc-800 dark:text-zinc-100 font-bold"
                 />
-                <span className="text-xs text-zinc-400 font-semibold uppercase">mins</span>
+                <span className="text-xs text-zinc-400 font-semibold uppercase">{t('mins')}</span>
               </div>
             </div>
           </div>
@@ -154,7 +156,7 @@ export const Onboarding: React.FC = () => {
           <div className="flex gap-2.5 p-3.5 bg-blue-500/5 border border-blue-500/10 rounded-xl text-xs text-blue-600/90 dark:text-blue-400/90">
             <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              We will backfill previous days in your history with exactly <strong>22 hours</strong> of wear time. This ensures your compliance statistics and tracking history are immediately accurate!
+              {t('onboardingBackfillInfo')}
             </p>
           </div>
 
@@ -163,7 +165,7 @@ export const Onboarding: React.FC = () => {
             type="submit"
             className="w-full h-12 bg-brand-green text-white font-semibold rounded-xl shadow-lg hover:bg-emerald-600 transition-all active:scale-[0.97] mt-2 cursor-pointer"
           >
-            Start Tracking
+            {t('onboardingSubmit')}
           </button>
         </form>
       </div>

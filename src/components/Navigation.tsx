@@ -1,17 +1,21 @@
 import React from 'react';
 import { Home, History, Layers, Settings } from 'lucide-react';
 
+import { useTranslation } from '../utils/i18n';
+
 interface NavigationProps {
   activeTab: 'home' | 'history' | 'tray' | 'settings';
   setActiveTab: (tab: 'home' | 'history' | 'tray' | 'settings') => void;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab }) => {
+  const { t } = useTranslation();
+
   const tabs = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'history', label: 'History', icon: History },
-    { id: 'tray', label: 'Tray', icon: Layers },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'home', label: t('tabHome'), icon: Home },
+    { id: 'history', label: t('tabHistory'), icon: History },
+    { id: 'tray', label: t('tabTray'), icon: Layers },
+    { id: 'settings', label: t('tabSettings'), icon: Settings },
   ] as const;
 
   return (
