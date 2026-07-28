@@ -19,6 +19,9 @@ interface StoreState extends AppState {
     isWearingNow: boolean;
     outMinutesToday: number;
   }) => void;
+  updateSession: (id: string, updates: Partial<Session>) => void;
+  deleteSession: (id: string) => void;
+  addSession: (session: Session) => void;
   resetData: () => void;
 }
 
@@ -173,6 +176,77 @@ export const useStore = create<StoreState>()(
 
         set({
           trays: updatedTrays,
+          undoStack: undoState,
+        });
+      },
+
+      updateSession: (id, updates) => {
+        const state = get();
+        const undoState = {
+          currentState: state.currentState,
+          lastTransition: state.lastTransition,
+          sessions: [...state.sessions],
+          trays: [...state.trays],
+        };
+
+        const updatedSessions = state.sessions.map((s) => {
+          if (s.id === id) {
+            return { ...s, ...updates };
+          }
+          return s;
+        });
+
+        let newLastTransition = state.lastTransition;
+        const activeSession = state.sessions.find(s => s.end === undefined);
+        if (activeSession && activeSession.id === id && updates.start !== undefined) {
+          newLastTransition = updates.start;
+        }
+
+        set({
+          sessions: updatedSessions,
+          lastTransition: newLastTransition,
+          undoStack: undoState,
+        });
+      },
+
+      deleteSession: (id) => {
+        const state = get();
+        const undoState = {
+          currentState: state.currentState,
+          lastTransition: state.lastTransition,
+          sessions: [...state.sessions],
+          trays: [...state.trays],
+        };
+
+        const updatedSessions = state.sessions.filter((s) => s.id !== id);
+
+        let newCurrentState = state.currentState;
+        let newLastTransition = state.lastTransition;
+        const sessionToDelete = state.sessions.find(s => s.id === id);
+        if (sessionToDelete && sessionToDelete.end === undefined) {
+          newCurrentState = 'out';
+          newLastTransition = Date.now();
+        }
+
+        set({
+          sessions: updatedSessions,
+          currentState: newCurrentState,
+          lastTransition: newLastTransition,
+          undoStack: undoState,
+        });
+      },
+
+      addSession: (session) => {
+        const state = get();
+        const undoState = {
+          currentState: state.currentState,
+          lastTransition: state.lastTransition,
+          sessions: [...state.sessions],
+          trays: [...state.trays],
+        };
+
+        set({
+          sessions: [...state.sessions, session],
           undoStack: undoState,
         });
       },

@@ -66,6 +66,12 @@ export const translations = {
     dayDetailActiveSession: 'Active session...',
     dayDetailOutOfMouth: 'Out of mouth...',
     dayDetailNoData: 'No data logged for this day',
+    dayDetailAddSession: 'Add Session',
+    dayDetailWornDuration: 'Worn',
+    dayDetailStillWearing: 'Still wearing',
+    dayDetailPutInTime: 'Put In',
+    dayDetailTookOutTime: 'Took Out',
+    dayDetailDeleteConfirm: 'Are you sure you want to delete this session?',
     back: 'Back',
 
     // Tray
@@ -180,6 +186,12 @@ export const translations = {
     dayDetailActiveSession: 'Sesión activa...',
     dayDetailOutOfMouth: 'Fuera de la boca...',
     dayDetailNoData: 'No hay datos registrados para este día',
+    dayDetailAddSession: 'Agregar Sesión',
+    dayDetailWornDuration: 'Uso',
+    dayDetailStillWearing: 'Aún puesto',
+    dayDetailPutInTime: 'Puesto',
+    dayDetailTookOutTime: 'Quitado',
+    dayDetailDeleteConfirm: '¿Estás seguro de que deseas eliminar esta sesión?',
     back: 'Atrás',
 
     // Tray

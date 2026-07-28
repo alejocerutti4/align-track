@@ -8,6 +8,7 @@ import { Settings } from './features/Settings';
 import { UndoToast } from './components/UndoToast';
 import { Onboarding } from './features/Onboarding';
 import { useRegisterSW } from 'virtual:pwa-register/react';
+import { Analytics } from '@vercel/analytics/react';
 import './App.css';
 
 const App: React.FC = () => {
@@ -104,6 +105,7 @@ const App: React.FC = () => {
       {/* Persistent global widgets */}
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
       <UndoToast />
+      <Analytics />
     </div>
   );
 };
